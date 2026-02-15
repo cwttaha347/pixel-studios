@@ -93,7 +93,7 @@ function VideoCard({ src, index }: VideoCardProps) {
 
 export default function VideoShowcase() {
     return (
-        <div className="py-20 space-y-12">
+        <div className="pt-4 pb-20 space-y-12">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}

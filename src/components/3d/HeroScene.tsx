@@ -15,7 +15,7 @@ function TechCore({ isMobile }: { isMobile: boolean }) {
     // Procedural Tech Panels
     const panels = useMemo(() => {
         const temp = [];
-        const count = isMobile ? 15 : 30;
+        const count = isMobile ? 8 : 15;
         for (let i = 0; i < count; i++) {
             const angle = (i / count) * Math.PI * 2;
             const radius = 2 + Math.random() * 1.5;
@@ -46,35 +46,30 @@ function TechCore({ isMobile }: { isMobile: boolean }) {
 
     return (
         <group ref={groupRef}>
-            {/* Center Glass Orb */}
+            {/* Center Glass Orb - Optimized */}
             <mesh scale={isMobile ? 1.2 : 1.5}>
-                <sphereGeometry args={[1, 64, 64]} />
-                <MeshTransmissionMaterial
-                    backside
-                    samples={16}
-                    thickness={0.5}
-                    chromaticAberration={0.05}
-                    anisotropy={0.1}
-                    distortion={0.1}
-                    distortionScale={0.1}
-                    temporalDistortion={0.1}
-                    clearcoat={1}
-                    attenuationDistance={0.5}
-                    attenuationColor="#ffffff"
+                <sphereGeometry args={[1, 32, 32]} />
+                <meshStandardMaterial
                     color="#8b5cf6"
+                    emissive="#8b5cf6"
+                    emissiveIntensity={2}
+                    transparent
+                    opacity={0.6}
+                    roughness={0.1}
+                    metalness={0.8}
                 />
             </mesh>
 
             {/* Kinetic Rings */}
             <group rotation={[Math.PI / 2, 0, 0]}>
-                <Float speed={5} rotationIntensity={2} floatIntensity={1}>
-                    <Torus args={[2.8, 0.02, 16, 100]} rotation={[0.5, 0.5, 0]}>
-                        <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={5} transparent opacity={0.5} />
+                <Float speed={2} rotationIntensity={1} floatIntensity={0.5}>
+                    <Torus args={[2.8, 0.015, 12, 60]} rotation={[0.5, 0.5, 0]}>
+                        <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={3} transparent opacity={0.4} />
                     </Torus>
                 </Float>
-                <Float speed={3} rotationIntensity={3} floatIntensity={2}>
-                    <Torus args={[3.2, 0.01, 16, 100]} rotation={[-0.5, 0.8, 0]}>
-                        <meshStandardMaterial color="#ec4899" emissive="#ec4899" emissiveIntensity={5} transparent opacity={0.3} />
+                <Float speed={1.5} rotationIntensity={1.5} floatIntensity={1}>
+                    <Torus args={[3.2, 0.008, 12, 60]} rotation={[-0.5, 0.8, 0]}>
+                        <meshStandardMaterial color="#ec4899" emissive="#ec4899" emissiveIntensity={3} transparent opacity={0.2} />
                     </Torus>
                 </Float>
             </group>
@@ -85,7 +80,7 @@ function TechCore({ isMobile }: { isMobile: boolean }) {
             ))}
 
             {/* Core Glow */}
-            <pointLight intensity={10} color="#8b5cf6" distance={5} />
+            <pointLight intensity={5} color="#8b5cf6" distance={5} />
         </group>
     );
 }
@@ -97,7 +92,7 @@ function Panel({ position, rotation, scale, speed }: any) {
         const time = state.clock.getElapsedTime();
         meshRef.current.rotation.x += 0.01 * speed;
         meshRef.current.rotation.y += 0.005 * speed;
-        meshRef.current.position.y += Math.sin(time * speed) * 0.002;
+        meshRef.current.position.y += Math.sin(time * speed) * 0.001; // Reduced movement
     });
 
     return (
@@ -108,7 +103,7 @@ function Panel({ position, rotation, scale, speed }: any) {
                 metalness={1}
                 roughness={0.2}
                 emissive="#8b5cf6"
-                emissiveIntensity={Math.random() > 0.8 ? 2 : 0}
+                emissiveIntensity={Math.random() > 0.8 ? 1.5 : 0}
             />
         </mesh>
     );
@@ -119,15 +114,16 @@ function Atmosphere() {
     const lightRef = useRef<THREE.PointLight>(null!);
 
     useFrame(() => {
+        // Reduced frequency of light position updates if needed, but simple lerp/assignment is fine
         lightRef.current.position.x = mouse.x * 10;
         lightRef.current.position.y = mouse.y * 10;
     });
 
     return (
         <>
-            <Stars radius={100} depth={50} count={8000} factor={4} saturation={0} fade speed={1} />
-            <pointLight ref={lightRef} intensity={5} color="#ec4899" distance={20} />
-            <spotLight position={[0, 10, 0]} angle={0.5} penumbra={1} intensity={2} castShadow />
+            <Stars radius={100} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
+            <pointLight ref={lightRef} intensity={3} color="#ec4899" distance={15} />
+            <spotLight position={[0, 10, 0]} angle={0.5} penumbra={1} intensity={1} castShadow={false} />
             <Environment preset="night" />
         </>
     );
