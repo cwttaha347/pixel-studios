@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, Float, PresentationControls, ContactShadows, Html, useProgress, Stars, MeshTransmissionMaterial, Torus } from '@react-three/drei';
+import { Environment, Float, PresentationControls, ContactShadows, Html, useProgress, Stars, Torus } from '@react-three/drei';
 import { Suspense, useRef, useMemo, useState, useEffect } from 'react';
 import * as THREE from 'three';
 
