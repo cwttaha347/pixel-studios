@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, Float, PresentationControls, ContactShadows, Html, useProgress, Stars, Torus } from '@react-three/drei';
+import { Environment, PresentationControls, Html, useProgress, Stars } from '@react-three/drei';
 import { Suspense, useRef, useMemo, useState, useEffect } from 'react';
 import * as THREE from 'three';
 
@@ -47,8 +47,8 @@ function TechCore({ isMobile }: { isMobile: boolean }) {
     return (
         <group ref={groupRef}>
             {/* Center Glass Orb - Optimized */}
-            <mesh scale={isMobile ? 1.2 : 1.5}>
-                <sphereGeometry args={[1, 32, 32]} />
+            <mesh scale={1.5}>
+                <sphereGeometry args={[1, 24, 24]} />
                 <meshStandardMaterial
                     color="#8b5cf6"
                     emissive="#8b5cf6"
@@ -62,16 +62,14 @@ function TechCore({ isMobile }: { isMobile: boolean }) {
 
             {/* Kinetic Rings */}
             <group rotation={[Math.PI / 2, 0, 0]}>
-                <Float speed={2} rotationIntensity={1} floatIntensity={0.5}>
-                    <Torus args={[2.8, 0.015, 12, 60]} rotation={[0.5, 0.5, 0]}>
-                        <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={3} transparent opacity={0.4} />
-                    </Torus>
-                </Float>
-                <Float speed={1.5} rotationIntensity={1.5} floatIntensity={1}>
-                    <Torus args={[3.2, 0.008, 12, 60]} rotation={[-0.5, 0.8, 0]}>
-                        <meshStandardMaterial color="#ec4899" emissive="#ec4899" emissiveIntensity={3} transparent opacity={0.2} />
-                    </Torus>
-                </Float>
+                <mesh rotation={[0.5, 0.5, 0]}>
+                    <torusGeometry args={[2.8, 0.012, 8, 48]} />
+                    <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={3} transparent opacity={0.4} />
+                </mesh>
+                <mesh rotation={[-0.5, 0.8, 0]}>
+                    <torusGeometry args={[3.2, 0.006, 8, 48]} />
+                    <meshStandardMaterial color="#ec4899" emissive="#ec4899" emissiveIntensity={3} transparent opacity={0.2} />
+                </mesh>
             </group>
 
             {/* Tech Panels Cluster */}
@@ -80,7 +78,7 @@ function TechCore({ isMobile }: { isMobile: boolean }) {
             ))}
 
             {/* Core Glow */}
-            <pointLight intensity={5} color="#8b5cf6" distance={5} />
+            <pointLight intensity={3} color="#8b5cf6" distance={5} />
         </group>
     );
 }
@@ -88,42 +86,30 @@ function TechCore({ isMobile }: { isMobile: boolean }) {
 function Panel({ position, rotation, scale, speed }: any) {
     const meshRef = useRef<THREE.Mesh>(null!);
 
-    useFrame((state) => {
-        const time = state.clock.getElapsedTime();
-        meshRef.current.rotation.x += 0.01 * speed;
-        meshRef.current.rotation.y += 0.005 * speed;
-        meshRef.current.position.y += Math.sin(time * speed) * 0.001; // Reduced movement
+    useFrame(() => {
+        meshRef.current.rotation.x += 0.005 * speed;
+        meshRef.current.rotation.y += 0.002 * speed;
     });
 
     return (
         <mesh ref={meshRef} position={position as any} rotation={rotation as any} scale={scale as any}>
-            <boxGeometry />
+            <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial
                 color="#1a1a1f"
                 metalness={1}
                 roughness={0.2}
                 emissive="#8b5cf6"
-                emissiveIntensity={Math.random() > 0.8 ? 1.5 : 0}
+                emissiveIntensity={Math.random() > 0.8 ? 1 : 0}
             />
         </mesh>
     );
 }
 
 function Atmosphere() {
-    const { mouse } = useThree();
-    const lightRef = useRef<THREE.PointLight>(null!);
-
-    useFrame(() => {
-        // Reduced frequency of light position updates if needed, but simple lerp/assignment is fine
-        lightRef.current.position.x = mouse.x * 10;
-        lightRef.current.position.y = mouse.y * 10;
-    });
-
     return (
         <>
-            <Stars radius={100} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
-            <pointLight ref={lightRef} intensity={3} color="#ec4899" distance={15} />
-            <spotLight position={[0, 10, 0]} angle={0.5} penumbra={1} intensity={1} castShadow={false} />
+            <Stars radius={100} depth={50} count={500} factor={4} saturation={0} fade speed={1} />
+            <pointLight intensity={2} color="#ec4899" distance={15} />
             <Environment preset="night" />
         </>
     );
@@ -148,7 +134,7 @@ export default function HeroScene() {
         }
     };
 
-    if (!isWebGLAvailable()) {
+    if (!isWebGLAvailable() || isMobile) {
         return (
             <div className="w-full h-full relative overflow-hidden bg-[#0a0a0c]">
                 <div className="absolute inset-0 opacity-40">
@@ -164,12 +150,11 @@ export default function HeroScene() {
     return (
         <div className="w-full h-full overflow-hidden bg-[#0a0a0c]">
             <Canvas
-                shadows
-                camera={{ position: [0, 0, isMobile ? 10 : 8], fov: 45 }}
-                dpr={[1, 2]}
+                camera={{ position: [0, 0, 8], fov: 45 }}
+                dpr={1}
             >
                 <color attach="background" args={['#0a0a0c']} />
-                <fog attach="fog" args={['#0a0a0c', 5, 30]} />
+                <fog attach="fog" args={['#0a0a0c', 5, 25]} />
 
                 <ambientLight intensity={0.2} />
 
@@ -183,7 +168,6 @@ export default function HeroScene() {
                         <TechCore isMobile={isMobile} />
                     </PresentationControls>
                     <Atmosphere />
-                    <ContactShadows position={[0, -4.5, 0]} opacity={0.4} scale={25} blur={2} far={10} />
                 </Suspense>
             </Canvas>
         </div>

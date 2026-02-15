@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 
-const videos = Array.from({ length: 25 }, (_, i) => ({
+const videos = Array.from({ length: 6 }, (_, i) => ({
     id: i + 1,
     src: `/portfolio-content/videos/${i + 1}.mp4`,
 }));
