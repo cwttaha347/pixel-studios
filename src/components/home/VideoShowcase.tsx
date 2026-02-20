@@ -1,11 +1,9 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { portfolioItems } from '../../data/items';
 
-const videos = Array.from({ length: 6 }, (_, i) => ({
-    id: i + 1,
-    src: `/portfolio-content/videos/${i + 1}.mp4`,
-}));
+const videos = portfolioItems.filter(item => item.type === 'video');
 
 interface VideoCardProps {
     src: string;
@@ -71,6 +69,7 @@ function VideoCard({ src, index }: VideoCardProps) {
                 muted={isMuted}
                 loop
                 playsInline
+                preload="none"
             />
 
             {/* Overlay Controls */}
@@ -92,6 +91,13 @@ function VideoCard({ src, index }: VideoCardProps) {
 }
 
 export default function VideoShowcase() {
+    const [visibleCount, setVisibleCount] = useState(6);
+    const hasMore = visibleCount < videos.length;
+
+    const loadMore = () => {
+        setVisibleCount(prev => Math.min(prev + 6, videos.length));
+    };
+
     return (
         <div className="pt-4 pb-20 space-y-12">
             <motion.div
@@ -107,10 +113,21 @@ export default function VideoShowcase() {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 max-w-7xl mx-auto">
-                {videos.map((video, index) => (
+                {videos.slice(0, visibleCount).map((video, index) => (
                     <VideoCard key={video.id} src={video.src} index={index} />
                 ))}
             </div>
+
+            {hasMore && (
+                <div className="flex justify-center pt-8">
+                    <button
+                        onClick={loadMore}
+                        className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-full shadow-lg shadow-purple-500/20 transition-all transform hover:scale-105 active:scale-95"
+                    >
+                        Load More Creations
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

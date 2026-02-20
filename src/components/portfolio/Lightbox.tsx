@@ -67,12 +67,23 @@ export default function Lightbox({ item, onClose, onNext, onPrev }: LightboxProp
                         className="relative max-w-[90vw] max-h-[90vh]"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <img
-                            src={item.src}
-                            alt={`Portfolio Item ${item.id}`}
-                            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl pointer-events-none select-none"
-                            onContextMenu={(e) => e.preventDefault()}
-                        />
+                        {item.type === 'video' ? (
+                            <video
+                                src={item.src}
+                                controls
+                                autoPlay
+                                preload="none"
+                                className="max-w-full max-h-[90vh] rounded-lg shadow-2xl"
+                                onContextMenu={(e) => e.preventDefault()}
+                            />
+                        ) : (
+                            <img
+                                src={item.src}
+                                alt={`Portfolio Item ${item.id}`}
+                                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl pointer-events-none select-none"
+                                onContextMenu={(e) => e.preventDefault()}
+                            />
+                        )}
                         {/* Security Overlay (Transparent) */}
                         <div className="absolute inset-0 bg-transparent" />
                     </motion.div>
